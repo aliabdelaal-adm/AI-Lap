@@ -1,0 +1,190 @@
+[
+  {
+    "id": "infinitetalk",
+    "name": "InfiniteTalk",
+    "tasks": ["audio-driven image-to-video", "audio-driven video-to-video"],
+    "source_url": "https://github.com/MeiGen-AI/InfiniteTalk",
+    "weights_url": "https://huggingface.co/MeiGen-AI/InfiniteTalk",
+    "upstream_commit": "50aa0a94184315407a991ae804d9b58d6d311ba8",
+    "source_commit_date": "2026-05-22",
+    "verified_on": "2026-10-25",
+    "code_license": {
+      "spdx": "Apache-2.0",
+      "status": "verified from upstream LICENSE.txt at the source commit"
+    },
+    "weights_license": {
+      "spdx": "Apache-2.0",
+      "status": "declared by upstream README; separately review Wan base, audio encoder, and every downloaded artifact"
+    },
+    "commercial_use": "Apache-2.0 permits commercial use subject to its notices and terms; this does not establish rights for the separate base model, audio encoder, or user media.",
+    "redistribution_and_hosting": "Upstream states Apache-2.0 for models in this repository; verify each model card and dependency license before redistribution or hosted service.",
+    "requirements": {
+      "upstream_setup": "Python 3.10; PyTorch 2.4.1, torchvision 0.19.1, torchaudio 2.4.1 with CUDA 12.1 are shown in upstream instructions.",
+      "model_components": [
+        "Wan2.1-I2V-14B-480P base",
+        "TencentGameMate/chinese-wav2vec2-base",
+        "MeiGen-AI/InfiniteTalk weights"
+      ],
+      "minimum_vram": null,
+      "storage_bytes": null,
+      "checksums": null
+    },
+    "training_code": "Not verified; no training workflow was established during this source review.",
+    "languages": "Arabic and Emirati Arabic support are unverified; the upstream example uses a Chinese Wav2Vec2 encoder.",
+    "published_evidence": "Upstream describes audio-driven motion/lip synchronization and image/audio generation; claims are author-reported and have not been reproduced here.",
+    "limitations": "Upstream notes color shift beyond about one minute for image-to-video and tradeoffs for long video-to-video control; no local quality test has been run.",
+    "integration_status": "planned",
+    "downloaded": false
+  },
+  {
+    "id": "wan2.1",
+    "name": "Wan2.1",
+    "tasks": ["text-to-video", "image-to-video", "video editing"],
+    "source_url": "https://github.com/Wan-Video/Wan2.1",
+    "weights_url": "https://huggingface.co/Wan-AI/",
+    "upstream_commit": null,
+    "verified_on": "2026-10-25",
+    "code_license": {
+      "spdx": "Apache-2.0",
+      "status": "repository LICENSE.txt checked; confirm exact source revision before use"
+    },
+    "weights_license": {
+      "spdx": null,
+      "status": "not independently verified for each checkpoint"
+    },
+    "commercial_use": "Not approved for this project until checkpoint-specific terms and all dependencies are reviewed.",
+    "redistribution_and_hosting": "Unverified for individual weights; do not redistribute or deploy commercially based on this summary.",
+    "requirements": {
+      "upstream_claim": "Wan2.1 T2V-1.3B page states 8.19 GB VRAM and reports about four minutes for a 5-second 480p sample on RTX 4090; author-reported, not tested here.",
+      "minimum_vram": null,
+      "storage_bytes": null,
+      "checksums": null
+    },
+    "training_code": "Upstream repository contains model code; training status not verified in this review.",
+    "languages": "Do not infer Arabic support from the model page.",
+    "published_evidence": "See the upstream technical report and benchmark methodology; not independently reproduced.",
+    "limitations": "No local inference or quality evaluation.",
+    "integration_status": "research backlog",
+    "downloaded": false
+  },
+  {
+    "id": "hunyuanvideo",
+    "name": "HunyuanVideo",
+    "tasks": ["text-to-video"],
+    "source_url": "https://github.com/Tencent-Hunyuan/HunyuanVideo",
+    "weights_url": "https://huggingface.co/tencent/HunyuanVideo",
+    "upstream_commit": null,
+    "verified_on": "2026-10-25",
+    "code_license": {
+      "spdx": null,
+      "status": "custom LICENSE.txt and NOTICE exist; terms require legal review"
+    },
+    "weights_license": {
+      "spdx": null,
+      "status": "not independently verified for each checkpoint"
+    },
+    "commercial_use": "Not approved for this project; check the exact custom license and model version.",
+    "redistribution_and_hosting": "Not assessed; do not assume permissive hosting or redistribution rights.",
+    "requirements": {
+      "minimum_vram": null,
+      "storage_bytes": null,
+      "checksums": null
+    },
+    "training_code": "Not assessed.",
+    "languages": "Not assessed for Arabic.",
+    "published_evidence": "The upstream project includes a paper and author-reported evaluation; none reproduced here.",
+    "limitations": "HunyuanVideo and HunyuanVideo-1.5 are separate versioned candidates.",
+    "integration_status": "research backlog",
+    "downloaded": false
+  },
+  {
+    "id": "longcat-video",
+    "name": "LongCat-Video / audio-driven avatar variants",
+    "tasks": ["video generation", "audio-driven avatar generation"],
+    "source_url": "https://github.com/meituan-longcat/LongCat-Video",
+    "weights_url": "https://huggingface.co/meituan-longcat",
+    "upstream_commit": null,
+    "verified_on": "2026-10-25",
+    "code_license": {
+      "spdx": null,
+      "status": "not reviewed"
+    },
+    "weights_license": {
+      "spdx": null,
+      "status": "not reviewed per checkpoint"
+    },
+    "commercial_use": "Not assessed.",
+    "redistribution_and_hosting": "Not assessed.",
+    "requirements": {
+      "minimum_vram": null,
+      "storage_bytes": null,
+      "checksums": null
+    },
+    "training_code": "Not assessed.",
+    "languages": "Not independently tested; do not infer Arabic support.",
+    "published_evidence": "Upstream InfiniteTalk README links a LongCat-Video-Avatar release; claims remain upstream-reported.",
+    "limitations": "Evaluate each avatar release separately from the general video model.",
+    "integration_status": "research backlog",
+    "downloaded": false
+  },
+  {
+    "id": "stable-video-infinity",
+    "name": "Stable Video Infinity",
+    "tasks": ["long video generation"],
+    "source_url": "https://github.com/vita-epfl/Stable-Video-Infinity",
+    "weights_url": null,
+    "upstream_commit": null,
+    "verified_on": "2026-10-25",
+    "code_license": {
+      "spdx": null,
+      "status": "not reviewed"
+    },
+    "weights_license": {
+      "spdx": null,
+      "status": "not reviewed"
+    },
+    "commercial_use": "Not assessed.",
+    "redistribution_and_hosting": "Not assessed.",
+    "requirements": {
+      "minimum_vram": null,
+      "storage_bytes": null,
+      "checksums": null
+    },
+    "training_code": "Not assessed.",
+    "languages": "Not assessed.",
+    "published_evidence": "Research claim and results must be checked against the paper and its evaluation protocol.",
+    "limitations": "Not assessed.",
+    "integration_status": "research backlog",
+    "downloaded": false
+  },
+  {
+    "id": "skyreels-v2",
+    "name": "SkyReels-V2",
+    "tasks": ["video generation"],
+    "source_url": "https://github.com/SkyworkAI/SkyReels-V2",
+    "weights_url": null,
+    "upstream_commit": null,
+    "verified_on": "2026-10-25",
+    "code_license": {
+      "spdx": null,
+      "status": "not reviewed"
+    },
+    "weights_license": {
+      "spdx": null,
+      "status": "not reviewed"
+    },
+    "commercial_use": "Not assessed.",
+    "redistribution_and_hosting": "Not assessed.",
+    "requirements": {
+      "minimum_vram": null,
+      "storage_bytes": null,
+      "checksums": null
+    },
+    "training_code": "Not assessed.",
+    "languages": "Not assessed.",
+    "published_evidence": "Not independently checked.",
+    "limitations": "Not assessed.",
+    "integration_status": "research backlog",
+    "downloaded": false
+  }
+]

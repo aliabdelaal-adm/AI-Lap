@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dubai Studio AI Lab</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; }
+    body { max-width: 760px; margin: 2rem auto; padding: 0 1rem; background: #f6f7fb; color: #172033; }
+    main { background: white; border: 1px solid #dfe3ec; border-radius: 14px; padding: 1.5rem; }
+    label { display: block; margin: 1rem 0 .35rem; font-weight: 650; }
+    input, textarea, button { box-sizing: border-box; width: 100%; padding: .7rem; font: inherit; }
+    button { margin-top: 1rem; cursor: pointer; border: 0; border-radius: 8px; background: #174ea6; color: white; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .row button { width: auto; padding-inline: 1rem; }
+    #status { min-height: 3rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .note { color: #49566d; font-size: .95rem; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="row">
+    <h1 id="title">إعلان ناطق</h1>
+    <button id="language" type="button">English</button>
+  </div>
+  <p id="intro" class="note">ارفع صورة شخصية وتسجيلًا صوتيًا، وأضف صورة منتج اختياريًا ووصفًا للمشهد. لم يُوصّل محرك فيديو بعد؛ لن يتم إنشاء فيديو حتى يُضبط محرك حقيقي.</p>
+  <form id="job-form">
+    <label for="token" id="token-label">رمز API</label>
+    <input id="token" type="password" autocomplete="off" required>
+    <label for="image" id="image-label">صورة الشخصية (PNG أو JPEG أو WebP)</label>
+    <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/webp" required>
+    <label for="product" id="product-label">صورة المنتج (اختيارية)</label>
+    <input id="product" name="product_image" type="file" accept="image/png,image/jpeg,image/webp">
+    <label for="audio" id="audio-label">التسجيل الصوتي (WAV أو MP3 أو M4A)</label>
+    <input id="audio" name="audio" type="file" accept="audio/wav,audio/mpeg,audio/mp4,.m4a" required>
+    <label for="scene" id="scene-label">وصف المشهد</label>
+    <textarea id="scene" name="scene" maxlength="2000" rows="4" required></textarea>
+    <button type="submit" id="submit">إرسال المهمة</button>
+  </form>
+  <p id="status" role="status" aria-live="polite"></p>
+</main>
+<script>
+  const labels = {
+    ar: {
+      title: "إعلان ناطق", intro: "ارفع صورة شخصية وتسجيلًا صوتيًا، وأضف صورة منتج اختياريًا ووصفًا للمشهد. لم يُوصّل محرك فيديو بعد؛ لن يتم إنشاء فيديو حتى يُضبط محرك حقيقي.",
+      token: "رمز API", image: "صورة الشخصية (PNG أو JPEG أو WebP)", product: "صورة المنتج (اختيارية)",
+      audio: "التسجيل الصوتي (WAV أو MP3 أو M4A)", scene: "وصف المشهد", submit: "إرسال المهمة", toggle: "English"
+    },
+    en: {
+      title: "Talking advertisement", intro: "Upload a portrait and recorded audio, and add a product image if needed. A scene description is required. No video engine is connected yet.",
+      token: "API token", image: "Portrait (PNG, JPEG, or WebP)", product: "Product image (optional)",
+      audio: "Recorded audio (WAV, MP3, or M4A)", scene: "Scene description", submit: "Submit job", toggle: "العربية"
+    }
+  };
+  let language = "ar";
+  let activeJobId = null;
+  const status = document.querySelector("#status");
+  function setLanguage(next) {
+    language = next;
+    const text = labels[next];
+    document.documentElement.lang = next;
+    document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
+    for (const [id, value] of Object.entries({
+      title: text.title, intro: text.intro, "token-label": text.token,
+      "image-label": text.image, "product-label": text.product,
+      "audio-label": text.audio, "scene-label": text.scene, submit: text.submit
+    })) document.getElementById(id).textContent = value;
+    document.querySelector("#language").textContent = text.toggle;
+  }
+  document.querySelector("#language").addEventListener("click", () => setLanguage(language === "ar" ? "en" : "ar"));
+  document.querySelector("#job-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const token = document.querySelector("#token").value;
+    const data = new FormData(event.currentTarget);
+    data.delete("image");
+    data.delete("audio");
+    data.delete("product_image");
+    data.append("image", document.querySelector("#image").files[0]);
+    data.append("audio", document.querySelector("#audio").files[0]);
+    const product = document.querySelector("#product").files[0];
+    if (product) data.append("product_image", product);
+    try {
+      const headers = new Headers();
+      headers.set("Authorization", "Bearer".concat(" ", token));
+      const response = await fetch("/v1/jobs", { method: "POST", headers, body: data });
+      const job = await response.json();
+      if (!response.ok) throw new Error(job.detail || response.statusText);
+      activeJobId = job.id;
+      status.textContent = `${job.id} — ${job.status}`;
+      while (activeJobId === job.id) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const current = await fetch(`/v1/jobs/${job.id}`, { headers });
+        const result = await current.json();
+        if (!current.ok) throw new Error(result.detail || current.statusText);
+        status.textContent = `${job.id} — ${result.status}${result.error ? `\n${result.error}` : ""}`;
+        if (result.status === "succeeded" && result.output_url) {
+          const output = await fetch(result.output_url, { headers });
+          if (!output.ok) throw new Error(language === "ar" ? "تعذر تنزيل الفيديو" : "Could not download the video");
+          const link = document.createElement("a");
+          const objectUrl = URL.createObjectURL(await output.blob());
+          link.href = objectUrl;
+          link.textContent = language === "ar" ? "تنزيل الفيديو" : "Download video";
+          link.setAttribute("download", "");
+          status.append(document.createElement("br"), link);
+          link.addEventListener("click", () => setTimeout(() => URL.revokeObjectURL(objectUrl), 1000), { once: true });
+          activeJobId = null;
+        }
+        if (["failed", "cancelled"].includes(result.status)) activeJobId = null;
+      }
+    } catch (error) {
+      status.textContent = String(error);
+      activeJobId = null;
+    }
+  });
+</script>
+</body>
+</html>
